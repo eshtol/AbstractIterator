@@ -4,35 +4,36 @@
 #include <memory>
 
 
-template <typename T> struct abstract_iterator
+template <typename T> class abstract_iterator
 {
+public:
 	using iterator_category = std::forward_iterator_tag;
 	using value_type = T;
 	using difference_type = std::ptrdiff_t;
 	using pointer = T*;
 	using reference = T&;
 
-	struct Concept
+	struct erasure_concept
 	{
-		virtual Concept& operator ++() = 0;
+		virtual erasure_concept& operator ++() = 0;
 		virtual value_type operator *() const = 0;
-		virtual bool operator !=(const Concept&) const = 0;
-		virtual std::unique_ptr<Concept> copy() const = 0;
+		virtual bool operator !=(const erasure_concept&) const = 0;
+		virtual std::unique_ptr<erasure_concept> copy() const = 0;
 
-		virtual ~Concept() = 0 {}
+		virtual ~erasure_concept() = 0 {}
 	};
 
 
-	template <typename IterType> struct Model : Concept
+	template <typename iter_type> struct erasure_model : erasure_concept
 	{
-		using value_type = IterType::value_type;
+		static_assert(std::is_same_v<iter_type::value_type, value_type>);
 
-		IterType m_iter;
+		iter_type m_iter;
 
-		Model(const IterType& iter) : m_iter(iter) {}
-		Model(IterType&& iter) : m_iter(std::move(iter)) {}
+		erasure_model(const iter_type& iter) : m_iter(iter) {}
+		erasure_model(iter_type&& iter) : m_iter(std::move(iter)) {}
 
-		Model& operator ++() override
+		erasure_model& operator ++() override
 		{
 			++m_iter;
 			return *this;
@@ -43,22 +44,23 @@ template <typename T> struct abstract_iterator
 			return *m_iter;
 		}
 
-		bool operator !=(const Concept& other) const override
+		bool operator !=(const erasure_concept& other) const override
 		{
-			return m_iter != static_cast<const Model&>(other).m_iter;
+			return m_iter != static_cast<const erasure_model&>(other).m_iter;
 		}
 
-		std::unique_ptr<Concept> copy() const override { return std::make_unique<Model>(m_iter); }
+		std::unique_ptr<erasure_concept> copy() const override { return std::make_unique<erasure_model>(m_iter); }
 
 	};
 
-	std::unique_ptr<Concept> m_ptr;
+	std::unique_ptr<erasure_concept> m_ptr;
 
+public:
 	abstract_iterator(const abstract_iterator& other) { m_ptr = other.m_ptr->copy(); }
 	abstract_iterator(abstract_iterator&& other) = default;
 
-	template <typename Iter> abstract_iterator(Iter&& iter) :
-		m_ptr(std::make_unique<Model<Iter>>(std::forward<Iter>(iter)))
+	template <typename iter_type> abstract_iterator(iter_type&& iter) :
+		m_ptr(std::make_unique<erasure_model<iter_type>>(std::forward<iter_type>(iter)))
 	{}
 
 	abstract_iterator& operator =(const abstract_iterator& other)
@@ -85,4 +87,4 @@ template <typename T> struct abstract_iterator
 
 };
 
-template <typename Iter> abstract_iterator(Iter) -> abstract_iterator<typename Iter::value_type>;
+template <typename iter_type> abstract_iterator(iter_type) -> abstract_iterator<typename iter_type::value_type>;
