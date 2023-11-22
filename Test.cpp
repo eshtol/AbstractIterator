@@ -1,4 +1,4 @@
-#include "abstract_iterator.h"
+#include "abstract_range.h"
 
 #include <string>
 #include <iostream>
@@ -12,9 +12,9 @@
 #include <span>
 
 
-static auto AbstractIterLoopFunc(const abstract_iterator<std::string>& begin, const abstract_iterator<std::string>& end)
+static auto AbstractIterLoopFunc(abstract_range<std::string> range)
 {
-	std::ranges::copy(begin, end, std::ostream_iterator<std::string>(std::cout, "\n"));
+	std::ranges::copy(range, std::ostream_iterator<std::string>(std::cout, "\n"));
 }
 
 
@@ -26,19 +26,19 @@ static auto PerformTest()
 	std::unordered_set<std::string> container4 = { "STRINGS", "FROM", "UNORDERED", "SET" };
 	std::span<std::string> container5 = container1;
 
-	AbstractIterLoopFunc(std::begin(container1), std::end(container1));
+	AbstractIterLoopFunc(container1);
 	std::cout << "===============================\n";
 
-	AbstractIterLoopFunc(std::begin(container2), std::end(container2));
+	AbstractIterLoopFunc(container2);
 	std::cout << "===============================\n";
 
-	AbstractIterLoopFunc(std::begin(container3), std::end(container3));
+	AbstractIterLoopFunc(container3);
 	std::cout << "===============================\n";
 
-	AbstractIterLoopFunc(std::begin(container4), std::end(container4));
+	AbstractIterLoopFunc(container4);
 	std::cout << "===============================\n";
 
-	AbstractIterLoopFunc(std::begin(container5), std::end(container5));
+	AbstractIterLoopFunc(container5);
 }
 
 

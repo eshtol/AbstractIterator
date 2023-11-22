@@ -130,6 +130,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="abstract_iterator.h" />
+    <ClInclude Include="abstract_range.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Test.cpp" />
