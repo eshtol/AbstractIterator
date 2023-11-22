@@ -25,7 +25,7 @@ public:
 
 	template <typename iter_type> class erasure_model : public erasure_concept
 	{
-		static_assert(std::is_same_v<typename iter_type::value_type, value_type>);
+//		static_assert(std::is_same_v<typename iter_type::value_type, value_type>);
 
 //		using reference = iter_type::reference;
 
@@ -33,7 +33,7 @@ public:
 
 	public:
 		erasure_model(const iter_type& iter) : m_iter(iter) {}
-		erasure_model(iter_type&& iter) : m_iter(std::move(iter)) {}
+		erasure_model(std::remove_reference_t<iter_type>&& iter) : m_iter(std::move(iter)) {}
 
 		erasure_model& operator ++() override
 		{
@@ -58,12 +58,14 @@ public:
 	std::unique_ptr<erasure_concept> m_ptr;
 
 public:
+	abstract_iterator() = default;
 	abstract_iterator(const abstract_iterator& other) { m_ptr = other.m_ptr->copy(); }
 	abstract_iterator(abstract_iterator&& other) = default;
 
 	template <typename iter_type> abstract_iterator(iter_type&& iter) :
 		m_ptr(std::make_unique<erasure_model<iter_type>>(std::forward<iter_type>(iter)))
 	{}
+
 
 	abstract_iterator& operator =(const abstract_iterator& other)
 	{
@@ -77,6 +79,13 @@ public:
 		return *this;
 	}
 
+	abstract_iterator operator ++(int)
+	{
+		const auto old = *this;
+		++*this;
+		return old;
+	}
+
 	reference operator *() const
 	{
 		return **m_ptr.get();
@@ -85,6 +94,11 @@ public:
 	bool operator !=(const abstract_iterator& other) const
 	{
 		return *m_ptr.get() != *other.m_ptr.get();
+	}
+
+	bool operator ==(const abstract_iterator& other) const
+	{
+		return !(*this != other);
 	}
 
 };

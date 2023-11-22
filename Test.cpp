@@ -14,12 +14,7 @@
 
 static auto AbstractIterLoopFunc(const abstract_iterator<std::string>& begin, const abstract_iterator<std::string>& end)
 {
-//	std::for_each(begin, end, [](const auto& arg) { std::cout << arg << '\n'; });
-	//	std::distance(begin, end);
-	//std::ranges::for_each(begin, end, [](const auto& arg) { std::cout << arg << '\n'; });
-
-	for (auto it = begin; it != end; ++it)
-		std::cout << *it << '\n';
+	std::ranges::copy(begin, end, std::ostream_iterator<std::string>(std::cout, "\n"));
 }
 
 
