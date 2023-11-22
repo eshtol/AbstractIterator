@@ -16,20 +16,22 @@ public:
 	struct erasure_concept
 	{
 		virtual erasure_concept& operator ++() = 0;
-		virtual value_type operator *() const = 0;
+		virtual reference operator *() const = 0;
 		virtual bool operator !=(const erasure_concept&) const = 0;
 		virtual std::unique_ptr<erasure_concept> copy() const = 0;
 
 		virtual ~erasure_concept() = 0 {}
 	};
 
-
-	template <typename iter_type> struct erasure_model : erasure_concept
+	template <typename iter_type> class erasure_model : public erasure_concept
 	{
-		static_assert(std::is_same_v<iter_type::value_type, value_type>);
+		static_assert(std::is_same_v<typename iter_type::value_type, value_type>);
+
+//		using reference = iter_type::reference;
 
 		iter_type m_iter;
 
+	public:
 		erasure_model(const iter_type& iter) : m_iter(iter) {}
 		erasure_model(iter_type&& iter) : m_iter(std::move(iter)) {}
 
@@ -39,9 +41,9 @@ public:
 			return *this;
 		}
 
-		value_type operator *() const override
+		reference operator *() const override
 		{
-			return *m_iter;
+			return const_cast<reference>(*m_iter);
 		}
 
 		bool operator !=(const erasure_concept& other) const override
@@ -75,7 +77,7 @@ public:
 		return *this;
 	}
 
-	value_type operator *() const
+	reference operator *() const
 	{
 		return **m_ptr.get();
 	}
