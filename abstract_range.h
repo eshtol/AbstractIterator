@@ -11,7 +11,7 @@ template <typename T> class abstract_range
 	std::size_t m_size;
 
 public:
-	template <typename container> abstract_range(container& cont) :
+	template <typename container> abstract_range(container&& cont) :
 		m_begin(std::begin(cont)),
 		m_end(std::end(cont)),
 		m_size(std::size(cont))
@@ -26,3 +26,6 @@ public:
 	auto size() const { return m_size; }
 	auto empty() const { return size() == 0; }
 };
+
+
+template <typename container> abstract_range(container) -> abstract_range<typename container::value_type>;

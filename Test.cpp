@@ -10,9 +10,10 @@
 #include <set>
 #include <unordered_set>
 #include <span>
+#include <unordered_map>
 
 
-static auto AbstractIterLoopFunc(abstract_range<std::string> range)
+static auto AbstractIterLoopFunc(const abstract_range<const std::string> range)	// The key point is than function is non-template.
 {
 	std::ranges::copy(range, std::ostream_iterator<std::string>(std::cout, "\n"));
 }
@@ -25,6 +26,7 @@ static auto PerformTest()
 	std::set<std::string> container3 = { "STRINGS", "FROM", "SET" };
 	std::unordered_set<std::string> container4 = { "STRINGS", "FROM", "UNORDERED", "SET" };
 	std::span<std::string> container5 = container1;
+	std::unordered_map<std::string, int> container6 = { { "STRINGS", 0 }, { "TAKEN", 6 }, { "FROM", 2 }, { "UNORDERED", 15 }, { "MAP", 7 }, { "KEYS", 3 } };
 
 	AbstractIterLoopFunc(container1);
 	std::cout << "===============================\n";
@@ -39,6 +41,9 @@ static auto PerformTest()
 	std::cout << "===============================\n";
 
 	AbstractIterLoopFunc(container5);
+	std::cout << "===============================\n";
+
+	AbstractIterLoopFunc(std::views::keys(container6));
 }
 
 
