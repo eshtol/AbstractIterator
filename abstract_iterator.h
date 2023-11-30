@@ -25,15 +25,17 @@ public:
 
 	template <typename iter_type> class erasure_model : public erasure_concept
 	{
-//		static_assert(std::is_same_v<typename iter_type::value_type, value_type>);
+//		using reference = iter_type::reference;	// not presented in std::ranges::elements_view
+		using reference = decltype(*std::declval<iter_type>());
 
-//		using reference = iter_type::reference;
+		static_assert(std::is_const_v<std::remove_reference_t<reference>> ? std::is_const_v<T> : true,
+					  "Don't forget a const-qualifier");
 
 		iter_type m_iter;
 
 	public:
 		erasure_model(const iter_type& iter) : m_iter(iter) {}
-		erasure_model(std::remove_reference_t<iter_type>&& iter) : m_iter(std::move(iter)) {}
+		erasure_model(iter_type&& iter) : m_iter(std::move(iter)) {}
 
 		erasure_model& operator ++() override
 		{
@@ -43,7 +45,7 @@ public:
 
 		reference operator *() const override
 		{
-			return const_cast<reference>(*m_iter);
+			return *m_iter;
 		}
 
 		bool operator !=(const erasure_concept& other) const override
@@ -65,7 +67,6 @@ public:
 	template <typename iter_type> abstract_iterator(iter_type&& iter) :
 		m_ptr(std::make_unique<erasure_model<iter_type>>(std::forward<iter_type>(iter)))
 	{}
-
 
 	abstract_iterator& operator =(const abstract_iterator& other)
 	{

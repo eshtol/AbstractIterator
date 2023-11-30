@@ -6,7 +6,7 @@
 template <typename T> class abstract_range
 {
 	abstract_iterator<T> m_begin,
-		m_end;
+		                 m_end;
 
 	std::size_t m_size;
 
@@ -15,7 +15,10 @@ public:
 		m_begin(std::begin(cont)),
 		m_end(std::end(cont)),
 		m_size(std::size(cont))
-	{}
+	{
+		static_assert(std::is_const_v<std::remove_reference_t<container>> ? std::is_const_v<T> : true,
+					  "Don't forget a const-qualifier");
+	}
 
 	const auto& begin() const { return m_begin; }
 	const auto& end() const { return m_end; }

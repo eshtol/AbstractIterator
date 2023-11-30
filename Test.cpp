@@ -13,7 +13,7 @@
 #include <unordered_map>
 
 
-static auto AbstractIterLoopFunc(const abstract_range<const std::string> range)	// The key point is than function is non-template.
+static auto AbstractRangeLoopFunc(const abstract_range<const std::string> range)	// The key point is that function is non-template.
 {
 	std::ranges::copy(range, std::ostream_iterator<std::string>(std::cout, "\n"));
 }
@@ -25,25 +25,25 @@ static auto PerformTest()
 	std::list<std::string> container2 = { "STRINGS", "FROM", "LIST" };
 	std::set<std::string> container3 = { "STRINGS", "FROM", "SET" };
 	std::unordered_set<std::string> container4 = { "STRINGS", "FROM", "UNORDERED", "SET" };
-	std::span<std::string> container5 = container1;
+	std::span<const std::string> container5 = container1;
 	std::unordered_map<std::string, int> container6 = { { "STRINGS", 0 }, { "TAKEN", 6 }, { "FROM", 2 }, { "UNORDERED", 15 }, { "MAP", 7 }, { "KEYS", 3 } };
 
-	AbstractIterLoopFunc(container1);
+	AbstractRangeLoopFunc(container1);
 	std::cout << "===============================\n";
 
-	AbstractIterLoopFunc(container2);
+	AbstractRangeLoopFunc(container2);
 	std::cout << "===============================\n";
 
-	AbstractIterLoopFunc(container3);
+	AbstractRangeLoopFunc(container3);
 	std::cout << "===============================\n";
 
-	AbstractIterLoopFunc(container4);
+	AbstractRangeLoopFunc(container4);
 	std::cout << "===============================\n";
 
-	AbstractIterLoopFunc(container5);
+	AbstractRangeLoopFunc(container5);
 	std::cout << "===============================\n";
 
-	AbstractIterLoopFunc(std::views::keys(container6));
+	AbstractRangeLoopFunc(std::views::keys(container6));
 }
 
 
