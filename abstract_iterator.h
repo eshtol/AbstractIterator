@@ -13,11 +13,16 @@ public:
 	using pointer = T*;
 	using reference = T&;
 
+private:
 	struct erasure_concept
 	{
 		virtual erasure_concept& operator ++() = 0;
+
 		virtual reference operator *() const = 0;
+		
 		virtual bool operator !=(const erasure_concept&) const = 0;
+		virtual bool operator ==(const erasure_concept&) const = 0;
+
 		virtual std::unique_ptr<erasure_concept> copy() const = 0;
 
 		virtual ~erasure_concept() = 0 {}
@@ -25,7 +30,7 @@ public:
 
 	template <typename iter_type> class erasure_model : public erasure_concept
 	{
-//		using reference = iter_type::reference;	// not presented in std::ranges::elements_view
+		//using reference = iter_type::reference;	// not presented in std::ranges::elements_view
 		using reference = decltype(*std::declval<iter_type>());
 
 		static_assert(std::is_const_v<std::remove_reference_t<reference>> ? std::is_const_v<T> : true,
@@ -51,6 +56,11 @@ public:
 		bool operator !=(const erasure_concept& other) const override
 		{
 			return m_iter != static_cast<const erasure_model&>(other).m_iter;
+		}
+
+		bool operator ==(const erasure_concept& other) const override
+		{
+			return m_iter == static_cast<const erasure_model&>(other).m_iter;
 		}
 
 		std::unique_ptr<erasure_concept> copy() const override { return std::make_unique<erasure_model>(m_iter); }
@@ -99,7 +109,7 @@ public:
 
 	bool operator ==(const abstract_iterator& other) const
 	{
-		return !(*this != other);
+		return *m_ptr.get() == *other.m_ptr.get();
 	}
 
 };

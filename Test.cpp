@@ -13,13 +13,29 @@
 #include <unordered_map>
 
 
-static auto AbstractRangeLoopFunc(const abstract_range<const std::string> range)	// The key point is that function is non-template.
+static auto AbstractRangeAccessLoopFunc(const abstract_range<const std::string> range)	// The key point is that function is non-template.
 {
 	std::ranges::copy(range, std::ostream_iterator<std::string>(std::cout, "\n"));
 }
 
 
-static auto PerformTest()
+static auto AbstractRangeModifyingLoopFunc(const abstract_range<std::string> range)
+{
+	constexpr auto alternate_caps = [](auto& arg)
+	{
+		if (arg == "UNMODIFIED") arg = "MODIFIED";
+
+		for (std::size_t i = 0; i < std::size(arg); i += 2)
+			arg[i] = std::tolower(arg[i]);
+
+		return arg;
+	};
+
+	std::ranges::for_each(range, alternate_caps);
+}
+
+
+static auto PerformAccessTest()
 {
 	std::vector<std::string> container1 = { "STRINGS", "FROM", "VECTOR" };
 	std::list<std::string> container2 = { "STRINGS", "FROM", "LIST" };
@@ -28,22 +44,58 @@ static auto PerformTest()
 	std::span<const std::string> container5 = container1;
 	std::unordered_map<std::string, int> container6 = { { "STRINGS", 0 }, { "TAKEN", 6 }, { "FROM", 2 }, { "UNORDERED", 15 }, { "MAP", 7 }, { "KEYS", 3 } };
 
-	AbstractRangeLoopFunc(container1);
+	std::cout << "===============================\n";
+	AbstractRangeAccessLoopFunc(container1);
 	std::cout << "===============================\n";
 
-	AbstractRangeLoopFunc(container2);
+	AbstractRangeAccessLoopFunc(container2);
 	std::cout << "===============================\n";
 
-	AbstractRangeLoopFunc(container3);
+	AbstractRangeAccessLoopFunc(container3);
 	std::cout << "===============================\n";
 
-	AbstractRangeLoopFunc(container4);
+	AbstractRangeAccessLoopFunc(container4);
 	std::cout << "===============================\n";
 
-	AbstractRangeLoopFunc(container5);
+	AbstractRangeAccessLoopFunc(container5);
 	std::cout << "===============================\n";
 
-	AbstractRangeLoopFunc(std::views::keys(container6));
+	AbstractRangeAccessLoopFunc(std::views::keys(container6));
+	std::cout << "===============================\n";
+}
+
+
+static auto PerformModifyingTest()
+{
+	constexpr auto print_container = AbstractRangeAccessLoopFunc;
+
+	std::vector<std::string> container1 = { "THIS", "IS", "UNMODIFIED", "STRINGS", "FROM", "VECTOR"};
+	std::list<std::string> container2 = { "THIS", "IS", "UNMODIFIED", "STRINGS", "FROM", "LIST" };
+
+	std::cout << "===============================\n";
+	print_container(container1);
+	std::cout << "-------------------------------\n";
+	AbstractRangeModifyingLoopFunc(container1);
+	print_container(container1);
+	std::cout << "===============================\n";
+
+	print_container(container2);
+	std::cout << "-------------------------------\n";
+	AbstractRangeModifyingLoopFunc(container2);
+	print_container(container2);
+	std::cout << "===============================\n";
+}
+
+
+static auto PerformTest()
+{
+	std::cout << "Access test result:\n";
+	PerformAccessTest();
+
+	std::cout << "\n\n\n";
+
+	std::cout << "Modifying test result:\n";
+	PerformModifyingTest();
 }
 
 
