@@ -60,7 +60,7 @@ static auto PerformAccessTest()
 	AbstractRangeAccessLoopFunc(container5);
 	std::cout << "===============================\n";
 
-	AbstractRangeAccessLoopFunc(std::views::keys(container6));
+	AbstractRangeAccessLoopFunc(container6 | std::views::keys);
 	std::cout << "===============================\n";
 }
 
@@ -69,14 +69,15 @@ static auto PerformModifyingTest()
 {
 	constexpr auto print_container = AbstractRangeAccessLoopFunc;
 
-	std::vector<std::string> container1 = { "THIS", "IS", "UNMODIFIED", "STRINGS", "FROM", "VECTOR"};
-	std::list<std::string> container2 = { "THIS", "IS", "UNMODIFIED", "STRINGS", "FROM", "LIST" };
+	std::vector<std::string> container1 = { "THESE", "ARE", "UNMODIFIED", "STRINGS", "FROM", "VECTOR" };
+	std::list<std::string> container2 = { "THESE", "ARE", "UNMODIFIED", "STRINGS", "FROM", "LIST" };
 
 	std::cout << "===============================\n";
 	print_container(container1);
 	std::cout << "-------------------------------\n";
 	AbstractRangeModifyingLoopFunc(container1);
 	print_container(container1);
+
 	std::cout << "===============================\n";
 
 	print_container(container2);
