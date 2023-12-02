@@ -90,7 +90,58 @@ static auto PerformModifyingTest()
 
 static auto PerformViewsTest()
 {
-	std::cout << "Nothing yet is here...\n";
+	constexpr auto print_range = AbstractRangeAccessLoopFunc;
+
+	std::set<std::string> container1 =
+	{
+		"STRING1",
+		"STRING2",
+		"STRING3",
+		"STRING4",
+		"STRING5",
+		"STRING6",
+		"STRING7"
+	};
+
+	std::unordered_map<std::string, std::string> container2 =
+	{
+		{ "KEY1", "VAL1" },
+		{ "KEY2", "VAL2" },
+		{ "KEY3", "VAL3" },
+		{ "KEY4", "VAL4" },
+		{ "KEY5", "VAL5" },
+		{ "KEY6", "VAL6" },
+		{ "KEY7", "VAL7" },
+	};
+
+	std::cout << "----empty view:\n";
+	print_range(std::views::empty<std::string>);
+
+	std::cout << "----single view:\n";
+	print_range(std::views::single(std::string("SINGLE STRING")));
+
+	std::cout << "----filter view:\n";
+	print_range(container1 | std::views::filter([](const auto& arg) { return arg == "STRING2" || arg == "STRING5"; }));
+
+	std::cout << "----all view:\n";
+	print_range(container1 | std::views::all);
+
+	std::cout << "----reverse view:\n";
+	print_range(container1 | std::views::reverse);
+
+	std::cout << "----take(3) view:\n";
+	print_range(container1 | std::views::take(3));
+
+	std::cout << "----drop(3) view:\n";
+	print_range(container1 | std::views::drop(3));
+
+	std::cout << "----keys view:\n";
+	print_range(container2 | std::views::keys);
+
+	std::cout << "----values view:\n";
+	print_range(container2 | std::views::values);
+
+	// todo : transform, (take|drop)_while, join, split, istream views
 }
 
 
