@@ -4,6 +4,8 @@ Some naive abstract/generic/polymorphic iterator implementation.
 
 
 ## Usage
+
+1) abstract_range:
 ```
 #include <abstract_range.h>
 
@@ -32,11 +34,6 @@ auto SomeFuncYouCantTemplatize(abstract_range<MyType> range)
 	// Applicable to algorithms:
 	std::ranges::transform(range, std::begin(range), MyModCallable);
 	const auto count = std::ranges::count_if(range, MyCheckPredicate);
-	
-
-	Has size info:
-	const auto size = std::size(range);
-	if (std::empty(range)) {}
 }
 
 
@@ -46,14 +43,33 @@ auto SomeFuncDoesntCareOfContainerType()
 	std::list<MyType> my_list;
 	std::map<MyOtherType, MyType> my_map;
 
-
 	SomeFuncYouCantTemplatize(my_vector);
 	SomeFuncYouCantTemplatize(my_list);
 
-	// Views are limited to those in which std::size() can be obtained:
-	SomeFuncYouCantTemplatize(my_list | std::ranges::views::drop(2));
-	SomeFuncYouCantTemplatize(my_map | std::ranges::views::values);
+	SomeFuncYouCantTemplatize(my_vector | std::ranges::views::drop(2));
+	SomeFuncYouCantTemplatize(my_list | std::views::take_while(MyStopPredicate));
+	SomeFuncYouCantTemplatize(my_map | std::views::values);
+}
+```
 
-	// abstract_sized_range in the next episode...
+2) abstract_sized_range:
+```
+// Take it if your algorithm needs the element count:
+auto SomeFuncYouCantTemplatize(abstract_sized_range<const MyType> range)
+{
+	// Has size info:
+	const auto size = std::size(range);
+	if (std::empty(range)) {}
+}
+
+
+auto SomeFuncDoesntCareOfContainerType()
+{
+	std::vector<MyType> my_vector;
+	std::map<MyOtherType, MyType> my_map;
+
+	// But remember - not all cases allow to calculate std::size(). 
+	SomeFuncYouCantTemplatize(my_vector | std::ranges::views::take(5));
+	SomeFuncYouCantTemplatize(my_map | std::views::keys);
 }
 ```

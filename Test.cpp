@@ -88,6 +88,12 @@ static auto PerformModifyingTest()
 }
 
 
+static auto PerformViewsTest()
+{
+	std::cout << "Nothing yet is here...\n";
+}
+
+
 static auto PerformTest()
 {
 	std::cout << "Access test result:\n";
@@ -97,6 +103,11 @@ static auto PerformTest()
 
 	std::cout << "Modifying test result:\n";
 	PerformModifyingTest();
+
+	std::cout << "\n\n\n";
+
+	std::cout << "Views test result:\n";
+	PerformViewsTest();
 }
 
 

@@ -11,10 +11,9 @@ template <typename T> class abstract_range
 	std::size_t m_size;
 
 public:
-	template <typename container> abstract_range(container&& cont) :
+	template <std::ranges::range container> abstract_range(container&& cont) :
 		m_begin(std::begin(cont)),
-		m_end(std::end(cont)),
-		m_size(std::size(cont))
+		m_end(std::end(cont))
 	{
 		static_assert(std::is_const_v<std::remove_reference_t<container>> ? std::is_const_v<T> : true,
 					  "Don't forget a const-qualifier");
@@ -25,10 +24,25 @@ public:
 
 	auto& begin() { return m_begin; }
 	auto& end() { return m_end; }
+};
+
+template <std::ranges::range container> abstract_range(container) -> abstract_range<typename container::value_type>;
+
+
+template <typename T> class abstract_sized_range : public abstract_range<T>
+{
+	using my_base = abstract_range<T>;
+
+	std::size_t m_size;
+
+public:
+	template <std::ranges::range container> abstract_sized_range(container&& cont) :
+		my_base(std::forward<container>(cont)),
+		m_size(std::size(cont))
+	{}
 
 	auto size() const { return m_size; }
 	auto empty() const { return size() == 0; }
 };
 
-
-template <typename container> abstract_range(container) -> abstract_range<typename container::value_type>;
+template <std::ranges::range container> abstract_sized_range(container) -> abstract_sized_range<typename container::value_type>;
