@@ -43,7 +43,7 @@ private:
 
 	public:
 		erasure_model(const iter_type& iter) : m_iter(iter) {}
-		erasure_model(iter_type&& iter) : m_iter(std::move(iter)) {}
+		erasure_model(std::remove_reference_t<iter_type>&& iter) : m_iter(std::move(iter)) {}
 
 		erasure_model& operator ++() override
 		{
