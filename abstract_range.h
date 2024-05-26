@@ -41,6 +41,12 @@ public:
 		m_size(std::size(cont))
 	{}
 
+	// Use carefully.
+	template <std::ranges::range container> abstract_sized_range(container&& cont, const std::size_t size) :
+		my_base(std::forward<container>(cont)),
+		m_size(size)
+	{}
+
 	auto size() const { return m_size; }
 	auto empty() const { return size() == 0; }
 };
