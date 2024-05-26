@@ -120,7 +120,7 @@ static auto PerformViewsTest()
 	std::cout << "----single view:\n";
 	print_range(std::views::single(std::string("SINGLE STRING")));
 
-	std::cout << "----filter view:\n";
+	std::cout << "----filter(STRING2 or STRING5) view:\n";
 	print_range(container1 | std::views::filter([](const auto& arg) { return arg == "STRING2" || arg == "STRING5"; }));
 
 	std::cout << "----all view:\n";

@@ -8,8 +8,6 @@ template <typename T> class abstract_range
 	abstract_iterator<T> m_begin,
 		                 m_end;
 
-	std::size_t m_size;
-
 public:
 	template <std::ranges::range container> abstract_range(container&& cont) :
 		m_begin(std::begin(cont)),
